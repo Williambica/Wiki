@@ -38,15 +38,15 @@ function App() {
   const { favorites, toggleFavorite } = useFavorites();
   const { toast, showToast, hideToast } = useToast();
 
-  // Verificar autenticação
-  useEffect(() => {
-    const auth = localStorage.getItem('wiki_auth');
-    const user = localStorage.getItem('wiki_user');
-    if (auth === 'true') {
-      setAutenticado(true);
-      setUsuario(user || 'Usuário');
-    }
-  }, []);
+  // NÃO verificar autenticação - sempre pedir login
+  // useEffect(() => {
+  //   const auth = localStorage.getItem('wiki_auth');
+  //   const user = localStorage.getItem('wiki_user');
+  //   if (auth === 'true') {
+  //     setAutenticado(true);
+  //     setUsuario(user || 'Usuário');
+  //   }
+  // }, []);
 
   useEffect(() => {
     if (autenticado) {
@@ -62,9 +62,13 @@ function App() {
   }, [busca, categoriaAtual, autenticado]);
 
   const handleLogin = () => {
+    const user = localStorage.getItem('wiki_user') || 'Usuário';
     setAutenticado(true);
-    setUsuario(localStorage.getItem('wiki_user') || 'Usuário');
-    showToast('Login realizado com sucesso!', 'success');
+    setUsuario(user);
+    // Limpar localStorage para sempre pedir login
+    localStorage.removeItem('wiki_auth');
+    localStorage.removeItem('wiki_user');
+    showToast(`Bem-vindo, ${user}!`, 'success');
   };
 
   const carregarCategorias = async () => {
