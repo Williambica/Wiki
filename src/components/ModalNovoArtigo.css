@@ -1,0 +1,287 @@
+.modal-overlay-novo {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.7);
+  backdrop-filter: blur(8px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 3000;
+  padding: 20px;
+  animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.modal-card-novo {
+  background: white;
+  border-radius: 20px;
+  max-width: 900px;
+  width: 100%;
+  max-height: 90vh;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 25px 50px rgba(0, 0, 0, 0.3);
+  position: relative;
+  animation: slideUp 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(50px) scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.modal-close-novo {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: none;
+  background: #f3f4f6;
+  color: #6b7280;
+  font-size: 20px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.modal-close-novo:hover {
+  background: #ef4444;
+  color: white;
+  transform: rotate(90deg);
+}
+
+.modal-header-novo {
+  padding: 40px 40px 30px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  text-align: center;
+}
+
+.modal-icon-novo {
+  width: 80px;
+  height: 80px;
+  margin: 0 auto 20px;
+  background: rgba(255, 255, 255, 0.2);
+  backdrop-filter: blur(10px);
+  border-radius: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 40px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+}
+
+.modal-header-novo h2 {
+  margin: 0 0 8px 0;
+  font-size: 28px;
+  font-weight: 700;
+}
+
+.modal-header-novo p {
+  margin: 0;
+  opacity: 0.95;
+  font-size: 15px;
+}
+
+.modal-form-novo {
+  padding: 40px;
+  overflow-y: auto;
+  flex: 1;
+}
+
+.form-group-novo {
+  margin-bottom: 28px;
+}
+
+.form-row-novo {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+}
+
+.form-group-novo label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  color: #1f2937;
+  margin-bottom: 10px;
+}
+
+.label-icon-novo {
+  font-size: 18px;
+}
+
+.form-group-novo input,
+.form-group-novo select,
+.form-group-novo textarea {
+  width: 100%;
+  padding: 14px 16px;
+  border: 2px solid #e5e7eb;
+  border-radius: 12px;
+  font-size: 15px;
+  font-family: inherit;
+  transition: all 0.3s ease;
+  background: #f9fafb;
+}
+
+.form-group-novo input:focus,
+.form-group-novo select:focus,
+.form-group-novo textarea:focus {
+  outline: none;
+  border-color: #667eea;
+  background: white;
+  box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1);
+}
+
+.form-group-novo textarea {
+  resize: vertical;
+  min-height: 200px;
+  font-family: 'Courier New', monospace;
+  line-height: 1.6;
+}
+
+.form-group-novo small {
+  display: block;
+  margin-top: 8px;
+  font-size: 13px;
+  color: #6b7280;
+}
+
+.modal-actions-novo {
+  display: flex;
+  gap: 12px;
+  padding-top: 20px;
+  border-top: 2px solid #f3f4f6;
+}
+
+.btn-cancel-novo,
+.btn-save-novo {
+  flex: 1;
+  padding: 16px;
+  border: none;
+  border-radius: 12px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.btn-cancel-novo {
+  background: #f3f4f6;
+  color: #6b7280;
+}
+
+.btn-cancel-novo:hover:not(:disabled) {
+  background: #e5e7eb;
+  color: #374151;
+}
+
+.btn-save-novo {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+}
+
+.btn-save-novo:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(102, 126, 234, 0.5);
+}
+
+.btn-save-novo:disabled,
+.btn-cancel-novo:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.spinner-novo {
+  width: 18px;
+  height: 18px;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-top-color: white;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Responsivo */
+@media (max-width: 768px) {
+  .modal-overlay-novo {
+    padding: 0;
+  }
+
+  .modal-card-novo {
+    border-radius: 0;
+    max-height: 100vh;
+  }
+
+  .modal-header-novo {
+    padding: 30px 20px 20px;
+  }
+
+  .modal-icon-novo {
+    width: 64px;
+    height: 64px;
+    font-size: 32px;
+  }
+
+  .modal-header-novo h2 {
+    font-size: 24px;
+  }
+
+  .modal-form-novo {
+    padding: 24px 20px;
+  }
+
+  .form-row-novo {
+    grid-template-columns: 1fr;
+    gap: 0;
+  }
+
+  .form-group-novo {
+    margin-bottom: 20px;
+  }
+
+  .modal-actions-novo {
+    flex-direction: column-reverse;
+  }
+
+  .btn-cancel-novo,
+  .btn-save-novo {
+    width: 100%;
+  }
+}
