@@ -1,0 +1,161 @@
+.header {
+  background: linear-gradient(135deg, #ffffff 0%, #fafafa 100%);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 1000;
+  border-bottom: 2px solid transparent;
+  border-image: linear-gradient(90deg, #1db89f 0%, #f47920 100%) 1;
+  backdrop-filter: blur(10px);
+}
+
+.header-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 2rem;
+}
+
+.header-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 0;
+}
+
+.logo-section {
+  display: flex;
+  align-items: center;
+}
+
+.logo {
+  display: flex;
+  align-items: center;
+  transition: all 0.3s;
+}
+
+.logo:hover {
+  opacity: 0.8;
+}
+
+.logo-img {
+  height: 50px;
+  width: auto;
+  transition: all 0.3s;
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1));
+}
+
+.logo-img:hover {
+  transform: scale(1.05);
+  filter: drop-shadow(0 3px 6px rgba(0, 0, 0, 0.15));
+}
+
+.logo-text {
+  display: flex;
+  flex-direction: column;
+  line-height: 1;
+}
+
+.logo-title {
+  display: flex;
+  gap: 0.5rem;
+  align-items: baseline;
+  margin-bottom: 0.25rem;
+}
+
+.logo-farmacias-header {
+  font-size: 1.3rem;
+  font-weight: 900;
+  font-style: italic;
+  color: #f47920;
+  letter-spacing: 1px;
+}
+
+.logo-associadas-header {
+  font-size: 1.3rem;
+  font-weight: 900;
+  font-style: italic;
+  color: #1db89f;
+  letter-spacing: 1px;
+}
+
+.logo-subtitle {
+  font-size: 0.8rem;
+  margin: 0;
+  font-weight: 500;
+  color: #6b7280;
+}
+
+.header-actions {
+  display: flex;
+  gap: 0.75rem;
+}
+
+.btn-header {
+  padding: 0.75rem 1.5rem;
+  border: none;
+  border-radius: 8px;
+  font-size: 0.95rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.btn-outline {
+  background: linear-gradient(white, white) padding-box,
+              linear-gradient(135deg, rgba(29, 184, 159, 0.3) 0%, rgba(244, 121, 32, 0.3) 100%) border-box;
+  color: #1f2937;
+  border: 2px solid transparent;
+  position: relative;
+  overflow: hidden;
+}
+
+.btn-outline::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(135deg, rgba(29, 184, 159, 0.1) 0%, rgba(244, 121, 32, 0.1) 100%);
+  transition: left 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.btn-outline:hover {
+  background: linear-gradient(white, white) padding-box,
+              linear-gradient(135deg, #1db89f 0%, #f47920 100%) border-box;
+  color: #1db89f;
+  box-shadow: 0 4px 12px rgba(29, 184, 159, 0.2);
+}
+
+.btn-outline:hover::before {
+  left: 0;
+}
+
+@media (max-width: 768px) {
+  .header-container {
+    padding: 0 1rem;
+  }
+
+  .header-content {
+    padding: 0.75rem 0;
+  }
+
+  .logo-farmacias-header,
+  .logo-associadas-header {
+    font-size: 1.1rem;
+  }
+
+  .logo-subtitle {
+    font-size: 0.7rem;
+  }
+
+  .btn-header {
+    padding: 0.65rem 1rem;
+    font-size: 0.85rem;
+  }
+}

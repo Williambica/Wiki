@@ -1,0 +1,95 @@
+{
+  "usuarios": [
+    {
+      "id": 1,
+      "nome": "Administrador",
+      "email": "admin@farmacia.com",
+      "area": "Suporte",
+      "criado_em": "2025-11-17T01:09:42.660Z"
+    }
+  ],
+  "categorias": [
+    {
+      "id": 1,
+      "nome": "E-commerce",
+      "cor": "#3b82f6"
+    },
+    {
+      "id": 2,
+      "nome": "Fiscal",
+      "cor": "#10b981"
+    },
+    {
+      "id": 3,
+      "nome": "Sistema/ERP",
+      "cor": "#f59e0b"
+    },
+    {
+      "id": 4,
+      "nome": "Integrações",
+      "cor": "#8b5cf6"
+    },
+    {
+      "id": 5,
+      "nome": "Banco de Dados",
+      "cor": "#ef4444"
+    }
+  ],
+  "artigos": [
+    {
+      "id": 1,
+      "titulo": "Como resolver erro de NF-e rejeitada",
+      "conteudo": "Quando uma NF-e é rejeitada, siga estes passos:\n\n1. Verifique o código de erro retornado pela SEFAZ\n2. Consulte a tabela de erros no manual da NF-e\n3. Corrija os dados conforme indicado\n4. Reenvie a nota\n\nErros comuns:\n- 539: CNPJ do destinatário inválido\n- 204: Duplicidade de NF-e\n- 215: Falha no schema XML\n\nSempre mantenha backup dos XMLs enviados!",
+      "categoria_id": 2,
+      "tags": "nfe, fiscal, erro, sefaz",
+      "autor_id": 1,
+      "visualizacoes": 45,
+      "criado_em": "2025-11-17T01:09:42.661Z",
+      "atualizado_em": "2025-11-17T01:09:42.661Z"
+    },
+    {
+      "id": 2,
+      "titulo": "Integração com E-commerce - Pedidos não sincronizam",
+      "conteudo": "Problema: Pedidos do e-commerce não estão sendo importados para o ERP.\n\nSolução:\n1. Verifique se o serviço de integração está rodando\n2. Confira as credenciais da API\n3. Valide se há erros no log de integração\n4. Teste a conexão manualmente\n\nComando para verificar status:\nSELECT * FROM integracao_log WHERE data >= CURRENT_DATE ORDER BY id DESC LIMIT 50;\n\nSe persistir, reinicie o serviço de integração.",
+      "categoria_id": 1,
+      "tags": "ecommerce, integração, pedidos, api",
+      "autor_id": 1,
+      "visualizacoes": 32,
+      "criado_em": "2025-11-17T01:09:42.661Z",
+      "atualizado_em": "2025-11-17T01:09:42.661Z"
+    },
+    {
+      "id": 3,
+      "titulo": "Lentidão no sistema - Diagnóstico",
+      "conteudo": "Quando o sistema está lento, verifique:\n\n1. Uso de CPU e memória no servidor\n2. Queries lentas no banco de dados\n3. Conexões abertas em excesso\n4. Espaço em disco\n\nQueries úteis:\n- Ver processos: SELECT * FROM pg_stat_activity;\n- Queries lentas: SELECT * FROM pg_stat_statements ORDER BY total_time DESC;\n\nAções imediatas:\n- Limpar cache do sistema\n- Reiniciar serviços se necessário\n- Verificar logs de erro",
+      "categoria_id": 3,
+      "tags": "performance, lentidão, banco, servidor",
+      "autor_id": 1,
+      "visualizacoes": 67,
+      "criado_em": "2025-11-17T01:09:42.661Z",
+      "atualizado_em": "2025-11-17T01:09:42.661Z"
+    }
+  ],
+  "scripts": [
+    {
+      "id": 1,
+      "titulo": "Consultar vendas do dia",
+      "descricao": "Query para ver todas as vendas realizadas hoje",
+      "codigo": "SELECT \n  v.id,\n  v.numero_venda,\n  c.nome as cliente,\n  v.valor_total,\n  v.data_hora\nFROM vendas v\nINNER JOIN clientes c ON v.cliente_id = c.id\nWHERE DATE(v.data_hora) = CURRENT_DATE\nORDER BY v.data_hora DESC;",
+      "linguagem": "sql",
+      "categoria_id": 3,
+      "autor_id": 1,
+      "criado_em": "2025-11-17T01:09:42.661Z"
+    },
+    {
+      "id": 2,
+      "titulo": "Limpar cache do sistema",
+      "descricao": "Script PowerShell para limpar cache temporário",
+      "codigo": "# Limpar cache do ERP\nRemove-Item -Path \"C:\\ERP\\temp\\*\" -Recurse -Force\nRemove-Item -Path \"C:\\ERP\\cache\\*\" -Recurse -Force\n\n# Reiniciar serviço\nRestart-Service -Name \"ERPService\"\n\nWrite-Host \"Cache limpo com sucesso!\"",
+      "linguagem": "powershell",
+      "categoria_id": 3,
+      "autor_id": 1,
+      "criado_em": "2025-11-17T01:09:42.661Z"
+    }
+  ]
+}

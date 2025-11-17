@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Base de Conhecimento - ERP Farmácias</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header class="header">
+            <div class="header-content">
+                <h1>📚 Base de Conhecimento</h1>
+                <p>Suporte ERP - Farmácias Associadas</p>
+            </div>
+            <div class="header-actions">
+                <button class="btn btn-primary" onclick="mostrarModalNovoArtigo()">+ Novo Artigo</button>
+                <button class="btn btn-secondary" onclick="mostrarModalNovoScript()">+ Novo Script</button>
+            </div>
+        </header>
+
+        <!-- Barra de Busca -->
+        <div class="search-bar">
+            <input type="text" id="busca" placeholder="🔍 Buscar artigos, soluções, scripts..." onkeyup="buscarArtigos()">
+        </div>
+
+        <!-- Filtros por Categoria -->
+        <div class="categorias" id="categorias">
+            <button class="categoria-btn active" onclick="filtrarCategoria(null)">Todas</button>
+        </div>
+
+        <!-- Tabs -->
+        <div class="tabs">
+            <button class="tab active" onclick="mudarTab('artigos')">Artigos</button>
+            <button class="tab" onclick="mudarTab('scripts')">Scripts</button>
+            <button class="tab" onclick="mudarTab('estatisticas')">Estatísticas</button>
+        </div>
+
+        <!-- Conteúdo -->
+        <div id="conteudo-artigos" class="tab-content active">
+            <div class="artigos-grid" id="artigos-lista"></div>
+        </div>
+
+        <div id="conteudo-scripts" class="tab-content">
+            <div class="scripts-lista" id="scripts-lista"></div>
+        </div>
+
+        <div id="conteudo-estatisticas" class="tab-content">
+            <div class="stats-grid" id="estatisticas"></div>
+        </div>
+    </div>
+
+    <!-- Modal Novo Artigo -->
+    <div id="modalArtigo" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="fecharModal('modalArtigo')">&times;</span>
+            <h2>Novo Artigo</h2>
+            <form id="formArtigo" onsubmit="salvarArtigo(event)">
+                <input type="hidden" id="artigo-id">
+                <div class="form-group">
+                    <label>Título</label>
+                    <input type="text" id="artigo-titulo" required>
+                </div>
+                <div class="form-group">
+                    <label>Categoria</label>
+                    <select id="artigo-categoria" required></select>
+                </div>
+                <div class="form-group">
+                    <label>Tags (separadas por vírgula)</label>
+                    <input type="text" id="artigo-tags" placeholder="nfe, erro, integração">
+                </div>
+                <div class="form-group">
+                    <label>Conteúdo</label>
+                    <textarea id="artigo-conteudo" rows="10" required></textarea>
+                </div>
+                <button type="submit" class="btn btn-primary">Salvar Artigo</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal Novo Script -->
+    <div id="modalScript" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="fecharModal('modalScript')">&times;</span>
+            <h2>Novo Script</h2>
+            <form id="formScript" onsubmit="salvarScript(event)">
+                <div class="form-group">
+                    <label>Título</label>
+                    <input type="text" id="script-titulo" required>
+                </div>
+                <div class="form-group">
+                    <label>Descrição</label>
+                    <input type="text" id="script-descricao">
+                </div>
+                <div class="form-group">
+                    <label>Linguagem</label>
+                    <select id="script-linguagem" required>
+                        <option value="sql">SQL</option>
+                        <option value="javascript">JavaScript</option>
+                        <option value="python">Python</option>
+                        <option value="bash">Bash</option>
+                        <option value="powershell">PowerShell</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Categoria</label>
+                    <select id="script-categoria" required></select>
+                </div>
+                <div class="form-group">
+                    <label>Código</label>
+                    <textarea id="script-codigo" rows="10" required></textarea>
+                </div>
+                <button type="submit" class="btn btn-primary">Salvar Script</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal Visualizar Artigo -->
+    <div id="modalVisualizarArtigo" class="modal">
+        <div class="modal-content modal-large">
+            <span class="close" onclick="fecharModal('modalVisualizarArtigo')">&times;</span>
+            <div id="artigo-detalhes"></div>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
