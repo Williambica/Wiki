@@ -16,58 +16,54 @@ import { useToast } from './hooks/useToast';
 import './App.css';
 
 function App() {
-  // Autenticação
+  // Estados de autenticação
   const [autenticado, setAutenticado] = useState(false);
   const [usuario, setUsuario] = useState('');
-
-  // Estados principais
   const [showLanding, setShowLanding] = useState(true);
+
+  // Estados de dados
   const [categorias, setCategorias] = useState([]);
   const [artigos, setArtigos] = useState([]);
   const [categoriaAtual, setCategoriaAtual] = useState(null);
   const [busca, setBusca] = useState('');
   const [artigoSelecionado, setArtigoSelecionado] = useState(null);
   const [tab, setTab] = useState('artigos');
-  const [loading, setLoading] = useState(true);
-  
-  // Modais
+  const [loading, setLoading] = useState(false);
+
+  // Estados de modais
   const [mostrarModalArtigo, setMostrarModalArtigo] = useState(false);
   const [mostrarModalScript, setMostrarModalScript] = useState(false);
-  
-  // Hooks
+
+  // Hooks customizados
   const { favorites, toggleFavorite } = useFavorites();
   const { toast, showToast, hideToast } = useToast();
 
-  // Sempre começa deslogado - sempre pedir login
+  // Limpar autenticação ao iniciar (sempre pedir login)
   useEffect(() => {
-    // Limpar qualquer autenticação anterior
     localStorage.removeItem('wiki_auth');
     localStorage.removeItem('wiki_user');
   }, []);
 
+  // Carregar dados quando autenticado
   useEffect(() => {
-    if (autenticado) {
+    if (autenticado && !showLanding) {
       carregarCategorias();
       carregarArtigos();
     }
-  }, [autenticado]);
+  }, [autenticado, showLanding]);
 
+  // Recarregar artigos quando busca ou categoria mudar
   useEffect(() => {
-    if (autenticado) {
+    if (autenticado && !showLanding) {
       carregarArtigos();
     }
-  }, [busca, categoriaAtual, autenticado]);
+  }, [busca, categoriaAtual]);
 
-  const handleLogin = () => {
-    const user = localStorage.getItem('wiki_user') || 'Usuário';
-    setAutenticado(true);
-    setUsuario(user);
-    showToast(`Bem-vindo, ${user}!`, 'success');
-  };
-
+  // Funções de API
   const carregarCategorias = async () => {
     try {
       const response = await fetch('/api/categorias');
+      if (!response.ok) throw new Error('Erro ao carregar categorias');
       const data = await response.json();
       setCategorias(data);
     } catch (error) {
@@ -82,13 +78,15 @@ function App() {
       let url = '/api/artigos?';
       if (busca) url += `busca=${encodeURIComponent(busca)}&`;
       if (categoriaAtual) url += `categoria=${categoriaAtual}`;
-      
+
       const response = await fetch(url);
+      if (!response.ok) throw new Error('Erro ao carregar artigos');
       const data = await response.json();
-      setArtigos(data);
+      setArtigos(Array.isArray(data) ? data : []);
     } catch (error) {
       console.error('Erro ao carregar artigos:', error);
       showToast('Erro ao carregar artigos', 'error');
+      setArtigos([]);
     } finally {
       setLoading(false);
     }
@@ -97,6 +95,7 @@ function App() {
   const visualizarArtigo = async (id) => {
     try {
       const response = await fetch(`/api/artigos/${id}`);
+      if (!response.ok) throw new Error('Erro ao carregar artigo');
       const data = await response.json();
       setArtigoSelecionado(data);
     } catch (error) {
@@ -110,16 +109,14 @@ function App() {
       const response = await fetch('/api/artigos', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(dados)
+        body: JSON.stringify(dados),
       });
-      
-      if (response.ok) {
-        showToast('Artigo criado com sucesso!', 'success');
-        carregarArtigos();
-        setMostrarModalArtigo(false);
-      } else {
-        throw new Error('Erro ao salvar artigo');
-      }
+
+      if (!response.ok) throw new Error('Erro ao salvar artigo');
+
+      showToast('Artigo criado com sucesso!', 'success');
+      await carregarArtigos();
+      setMostrarModalArtigo(false);
     } catch (error) {
       console.error('Erro ao salvar artigo:', error);
       showToast('Erro ao salvar artigo', 'error');
@@ -132,15 +129,13 @@ function App() {
       const response = await fetch('/api/scripts', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(dados)
+        body: JSON.stringify(dados),
       });
-      
-      if (response.ok) {
-        showToast('Script criado com sucesso!', 'success');
-        setMostrarModalScript(false);
-      } else {
-        throw new Error('Erro ao salvar script');
-      }
+
+      if (!response.ok) throw new Error('Erro ao salvar script');
+
+      showToast('Script criado com sucesso!', 'success');
+      setMostrarModalScript(false);
     } catch (error) {
       console.error('Erro ao salvar script:', error);
       showToast('Erro ao salvar script', 'error');
@@ -148,24 +143,40 @@ function App() {
     }
   };
 
-  // Se não autenticado, mostrar login
+  // Handlers de navegação
+  const handleLogin = () => {
+    const user = localStorage.getItem('wiki_user') || 'Usuário';
+    setAutenticado(true);
+    setUsuario(user);
+    showToast(`Bem-vindo, ${user}!`, 'success');
+  };
+
+  const handleEntrarWiki = () => {
+    setShowLanding(false);
+  };
+
+  const handleVoltarHome = () => {
+    setShowLanding(true);
+  };
+
+  // Renderização condicional
   if (!autenticado) {
     return <Login onLogin={handleLogin} />;
   }
 
-  // Se autenticado mas na landing page
   if (showLanding) {
-    return <LandingPage onEnter={() => setShowLanding(false)} />;
+    return <LandingPage onEnter={handleEntrarWiki} />;
   }
 
+  // Página principal da Wiki
   return (
     <div className="app">
-      <HeaderProfissional 
+      <HeaderProfissional
         onNovoArtigo={() => setMostrarModalArtigo(true)}
         onNovoScript={() => setMostrarModalScript(true)}
         usuario={usuario}
       />
-      
+
       <div className="wiki-layout">
         {/* Sidebar */}
         <aside className="wiki-sidebar">
@@ -192,7 +203,10 @@ function App() {
                 </button>
                 <button
                   className={`sidebar-link ${tab === 'queries' ? 'active' : ''}`}
-                  onClick={() => { setTab('queries'); setCategoriaAtual(6); }}
+                  onClick={() => {
+                    setTab('queries');
+                    setCategoriaAtual(6);
+                  }}
                 >
                   <span className="link-icon">💾</span>
                   <span>Queries SQL</span>
@@ -250,26 +264,48 @@ function App() {
         {/* Main Content */}
         <main className="wiki-main">
           <div className="wiki-content">
-            <Breadcrumbs 
+            <Breadcrumbs
               items={[
-                { label: 'Início', onClick: () => setShowLanding(true) },
-                { label: tab === 'artigos' ? 'Documentos' : tab === 'favoritos' ? 'Favoritos' : tab === 'queries' ? 'Queries SQL' : 'Estatísticas' },
-                ...(categoriaAtual ? [{ label: categorias.find(c => c.id === categoriaAtual)?.nome || '' }] : [])
+                { label: 'Início', onClick: handleVoltarHome },
+                {
+                  label:
+                    tab === 'artigos'
+                      ? 'Documentos'
+                      : tab === 'favoritos'
+                      ? 'Favoritos'
+                      : tab === 'queries'
+                      ? 'Queries SQL'
+                      : 'Estatísticas',
+                },
+                ...(categoriaAtual
+                  ? [
+                      {
+                        label:
+                          categorias.find((c) => c.id === categoriaAtual)
+                            ?.nome || '',
+                      },
+                    ]
+                  : []),
               ]}
             />
-            
-            {tab !== 'estatisticas' && <SearchBar busca={busca} setBusca={setBusca} />}
+
+            {tab !== 'estatisticas' && (
+              <SearchBar busca={busca} setBusca={setBusca} />
+            )}
 
             {tab === 'artigos' && (
               <>
                 <div className="content-header">
                   <h1 className="content-title">
-                    {categoriaAtual 
-                      ? categorias.find(c => c.id === categoriaAtual)?.nome 
+                    {categoriaAtual
+                      ? categorias.find((c) => c.id === categoriaAtual)?.nome
                       : 'Todos os Artigos'}
                   </h1>
                   <p className="content-subtitle">
-                    {artigos.length} {artigos.length === 1 ? 'artigo encontrado' : 'artigos encontrados'}
+                    {artigos.length}{' '}
+                    {artigos.length === 1
+                      ? 'artigo encontrado'
+                      : 'artigos encontrados'}
                   </p>
                 </div>
 
@@ -288,12 +324,15 @@ function App() {
                 <div className="content-header">
                   <h1 className="content-title">⭐ Meus Favoritos</h1>
                   <p className="content-subtitle">
-                    {favorites.length} {favorites.length === 1 ? 'artigo favoritado' : 'artigos favoritados'}
+                    {favorites.length}{' '}
+                    {favorites.length === 1
+                      ? 'artigo favoritado'
+                      : 'artigos favoritados'}
                   </p>
                 </div>
 
                 <ArticleGrid
-                  artigos={artigos.filter(a => favorites.includes(a.id))}
+                  artigos={artigos.filter((a) => favorites.includes(a.id))}
                   loading={loading}
                   onVisualizarArtigo={visualizarArtigo}
                   favorites={favorites}
@@ -312,7 +351,7 @@ function App() {
                 </div>
 
                 <ArticleGrid
-                  artigos={artigos.filter(a => a.categoria_id === 6)}
+                  artigos={artigos.filter((a) => a.categoria_id === 6)}
                   loading={loading}
                   onVisualizarArtigo={visualizarArtigo}
                   favorites={favorites}
@@ -325,7 +364,9 @@ function App() {
               <>
                 <div className="content-header">
                   <h1 className="content-title">📊 Estatísticas</h1>
-                  <p className="content-subtitle">Visão geral da base de conhecimento</p>
+                  <p className="content-subtitle">
+                    Visão geral da base de conhecimento
+                  </p>
                 </div>
                 <Stats />
               </>
@@ -360,11 +401,7 @@ function App() {
 
       {/* Toast */}
       {toast && (
-        <Toast
-          message={toast.message}
-          type={toast.type}
-          onClose={hideToast}
-        />
+        <Toast message={toast.message} type={toast.type} onClose={hideToast} />
       )}
 
       <ScrollToTop />
