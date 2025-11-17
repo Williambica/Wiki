@@ -1,17 +1,26 @@
 import { useState, useEffect } from 'react';
+import Login from './components/Login';
 import LandingPage from './components/LandingPage';
-import Header from './components/Header';
+import HeaderProfissional from './components/HeaderProfissional';
 import SearchBar from './components/SearchBar';
-import CategoryFilter from './components/CategoryFilter';
 import ArticleGrid from './components/ArticleGrid';
 import ArticleModal from './components/ArticleModal';
+import ModalNovoArtigo from './components/ModalNovoArtigo';
+import ModalNovoScript from './components/ModalNovoScript';
 import Stats from './components/Stats';
 import Breadcrumbs from './components/Breadcrumbs';
 import ScrollToTop from './components/ScrollToTop';
+import Toast from './components/Toast';
 import { useFavorites } from './hooks/useFavorites';
+import { useToast } from './hooks/useToast';
 import './App.css';
 
 function App() {
+  // Autenticação
+  const [autenticado, setAutenticado] = useState(false);
+  const [usuario, setUsuario] = useState('');
+
+  // Estados principais
   const [showLanding, setShowLanding] = useState(true);
   const [categorias, setCategorias] = useState([]);
   const [artigos, setArtigos] = useState([]);
@@ -20,16 +29,43 @@ function App() {
   const [artigoSelecionado, setArtigoSelecionado] = useState(null);
   const [tab, setTab] = useState('artigos');
   const [loading, setLoading] = useState(true);
-  const { favorites, toggleFavorite, isFavorite } = useFavorites();
+  
+  // Modais
+  const [mostrarModalArtigo, setMostrarModalArtigo] = useState(false);
+  const [mostrarModalScript, setMostrarModalScript] = useState(false);
+  
+  // Hooks
+  const { favorites, toggleFavorite } = useFavorites();
+  const { toast, showToast, hideToast } = useToast();
 
+  // Verificar autenticação
   useEffect(() => {
-    carregarCategorias();
-    carregarArtigos();
+    const auth = localStorage.getItem('wiki_auth');
+    const user = localStorage.getItem('wiki_user');
+    if (auth === 'true') {
+      setAutenticado(true);
+      setUsuario(user || 'Usuário');
+    }
   }, []);
 
   useEffect(() => {
-    carregarArtigos();
-  }, [busca, categoriaAtual]);
+    if (autenticado) {
+      carregarCategorias();
+      carregarArtigos();
+    }
+  }, [autenticado]);
+
+  useEffect(() => {
+    if (autenticado) {
+      carregarArtigos();
+    }
+  }, [busca, categoriaAtual, autenticado]);
+
+  const handleLogin = () => {
+    setAutenticado(true);
+    setUsuario(localStorage.getItem('wiki_user') || 'Usuário');
+    showToast('Login realizado com sucesso!', 'success');
+  };
 
   const carregarCategorias = async () => {
     try {
@@ -38,6 +74,7 @@ function App() {
       setCategorias(data);
     } catch (error) {
       console.error('Erro ao carregar categorias:', error);
+      showToast('Erro ao carregar categorias', 'error');
     }
   };
 
@@ -53,6 +90,7 @@ function App() {
       setArtigos(data);
     } catch (error) {
       console.error('Erro ao carregar artigos:', error);
+      showToast('Erro ao carregar artigos', 'error');
     } finally {
       setLoading(false);
     }
@@ -65,16 +103,70 @@ function App() {
       setArtigoSelecionado(data);
     } catch (error) {
       console.error('Erro ao carregar artigo:', error);
+      showToast('Erro ao carregar artigo', 'error');
     }
   };
 
+  const handleSalvarArtigo = async (dados) => {
+    try {
+      const response = await fetch('/api/artigos', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(dados)
+      });
+      
+      if (response.ok) {
+        showToast('Artigo criado com sucesso!', 'success');
+        carregarArtigos();
+        setMostrarModalArtigo(false);
+      } else {
+        throw new Error('Erro ao salvar artigo');
+      }
+    } catch (error) {
+      console.error('Erro ao salvar artigo:', error);
+      showToast('Erro ao salvar artigo', 'error');
+      throw error;
+    }
+  };
+
+  const handleSalvarScript = async (dados) => {
+    try {
+      const response = await fetch('/api/scripts', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(dados)
+      });
+      
+      if (response.ok) {
+        showToast('Script criado com sucesso!', 'success');
+        setMostrarModalScript(false);
+      } else {
+        throw new Error('Erro ao salvar script');
+      }
+    } catch (error) {
+      console.error('Erro ao salvar script:', error);
+      showToast('Erro ao salvar script', 'error');
+      throw error;
+    }
+  };
+
+  // Se não autenticado, mostrar login
+  if (!autenticado) {
+    return <Login onLogin={handleLogin} />;
+  }
+
+  // Se autenticado mas na landing page
   if (showLanding) {
     return <LandingPage onEnter={() => setShowLanding(false)} />;
   }
 
   return (
     <div className="app">
-      <Header onBackToHome={() => setShowLanding(true)} />
+      <HeaderProfissional 
+        onNovoArtigo={() => setMostrarModalArtigo(true)}
+        onNovoScript={() => setMostrarModalScript(true)}
+        usuario={usuario}
+      />
       
       <div className="wiki-layout">
         {/* Sidebar */}
@@ -163,12 +255,12 @@ function App() {
             <Breadcrumbs 
               items={[
                 { label: 'Início', onClick: () => setShowLanding(true) },
-                { label: tab === 'artigos' ? 'Documentos' : 'Estatísticas' },
+                { label: tab === 'artigos' ? 'Documentos' : tab === 'favoritos' ? 'Favoritos' : tab === 'queries' ? 'Queries SQL' : 'Estatísticas' },
                 ...(categoriaAtual ? [{ label: categorias.find(c => c.id === categoriaAtual)?.nome || '' }] : [])
               ]}
             />
             
-            <SearchBar busca={busca} setBusca={setBusca} />
+            {tab !== 'estatisticas' && <SearchBar busca={busca} setBusca={setBusca} />}
 
             {tab === 'artigos' && (
               <>
@@ -234,7 +326,7 @@ function App() {
             {tab === 'estatisticas' && (
               <>
                 <div className="content-header">
-                  <h1 className="content-title">Estatísticas</h1>
+                  <h1 className="content-title">📊 Estatísticas</h1>
                   <p className="content-subtitle">Visão geral da base de conhecimento</p>
                 </div>
                 <Stats />
@@ -244,10 +336,36 @@ function App() {
         </main>
       </div>
 
+      {/* Modais */}
       {artigoSelecionado && (
         <ArticleModal
           artigo={artigoSelecionado}
           onClose={() => setArtigoSelecionado(null)}
+        />
+      )}
+
+      {mostrarModalArtigo && (
+        <ModalNovoArtigo
+          onClose={() => setMostrarModalArtigo(false)}
+          onSalvar={handleSalvarArtigo}
+          categorias={categorias}
+        />
+      )}
+
+      {mostrarModalScript && (
+        <ModalNovoScript
+          onClose={() => setMostrarModalScript(false)}
+          onSalvar={handleSalvarScript}
+          categorias={categorias}
+        />
+      )}
+
+      {/* Toast */}
+      {toast && (
+        <Toast
+          message={toast.message}
+          type={toast.type}
+          onClose={hideToast}
         />
       )}
 
