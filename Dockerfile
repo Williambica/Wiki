@@ -1,21 +1,21 @@
-FROM node:18-alpine
+FROM node:20-alpine
 
 # Instalar dependências necessárias
 RUN apk add --no-cache python3 make g++ git
 
 WORKDIR /app
 
-# Copiar package files
-COPY package*.json ./
+# Copiar tudo primeiro
+COPY . .
 
 # Instalar dependências
 RUN npm install --legacy-peer-deps
 
-# Copiar código fonte
-COPY . .
-
 # Build do frontend
 RUN npm run build
+
+# Verificar se o build foi criado
+RUN ls -la dist/ || echo "ERRO: dist/ não foi criado!"
 
 # Criar diretório para dados
 RUN mkdir -p /app/data
