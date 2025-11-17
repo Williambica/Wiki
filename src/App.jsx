@@ -38,15 +38,12 @@ function App() {
   const { favorites, toggleFavorite } = useFavorites();
   const { toast, showToast, hideToast } = useToast();
 
-  // NÃO verificar autenticação - sempre pedir login
-  // useEffect(() => {
-  //   const auth = localStorage.getItem('wiki_auth');
-  //   const user = localStorage.getItem('wiki_user');
-  //   if (auth === 'true') {
-  //     setAutenticado(true);
-  //     setUsuario(user || 'Usuário');
-  //   }
-  // }, []);
+  // Sempre começa deslogado - sempre pedir login
+  useEffect(() => {
+    // Limpar qualquer autenticação anterior
+    localStorage.removeItem('wiki_auth');
+    localStorage.removeItem('wiki_user');
+  }, []);
 
   useEffect(() => {
     if (autenticado) {
@@ -65,9 +62,6 @@ function App() {
     const user = localStorage.getItem('wiki_user') || 'Usuário';
     setAutenticado(true);
     setUsuario(user);
-    // Limpar localStorage para sempre pedir login
-    localStorage.removeItem('wiki_auth');
-    localStorage.removeItem('wiki_user');
     showToast(`Bem-vindo, ${user}!`, 'success');
   };
 
