@@ -82,7 +82,15 @@ function App() {
       const response = await fetch(url);
       if (!response.ok) throw new Error('Erro ao carregar artigos');
       const data = await response.json();
-      setArtigos(Array.isArray(data) ? data : []);
+      
+      // A API pode retornar { artigos: [...], pagination: {...} } ou array direto
+      if (data.artigos && Array.isArray(data.artigos)) {
+        setArtigos(data.artigos);
+      } else if (Array.isArray(data)) {
+        setArtigos(data);
+      } else {
+        setArtigos([]);
+      }
     } catch (error) {
       console.error('Erro ao carregar artigos:', error);
       showToast('Erro ao carregar artigos', 'error');
