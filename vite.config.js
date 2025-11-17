@@ -5,6 +5,7 @@ export default defineConfig({
   plugins: [react()],
   server: {
     port: 3001,
+    host: true,
     proxy: {
       '/api': {
         target: 'http://localhost:3000',
@@ -13,6 +14,18 @@ export default defineConfig({
       '/documentos': {
         target: 'http://localhost:3000',
         changeOrigin: true,
+      }
+    }
+  },
+  build: {
+    outDir: 'dist',
+    sourcemap: false,
+    minify: 'esbuild',
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          'react-vendor': ['react', 'react-dom', 'react-router-dom']
+        }
       }
     }
   }
